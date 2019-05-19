@@ -1,0 +1,77 @@
+const express = require('express');
+
+const Projects = require('./projectModel.js');
+
+const router = express.Router();
+
+router.get('/', async (req, res) => {
+	try {
+		const projects = await Projects.get(req.id);
+		res.status(200).json(projects);
+	} catch (err) {
+		console.log(err);
+		res.status(500).json({ message: 'Error retrieving projects.' });
+	}
+});
+
+router.get('/:id', async (req, res) => {
+	try {
+		const { id } = req.params;
+		const project = await Projects.get(id);
+		res.status(200).json(project);
+	} catch (err) {
+		console.log(err);
+		res.status(500).json({ message: 'Error retrieving project.' });
+	}
+});
+
+router.get('/:id/actions', async (req, res) => {
+	try {
+		const { id } = req.params;
+		const project = await Projects.getProjectActions(id);
+		res.status(200).json(project);
+	} catch (err) {
+		console.log(err);
+		res.status(500).json({ message: 'Error retrieving project.' });
+	}
+});
+
+router.post('/', async (req, res) => {
+	try {
+		const project = await Projects.insert(req.body);
+		res.status(201).json(project);
+	} catch (err) {
+		console.log(err);
+		res.status(500).json({ message: 'Error retrieving actions.' });
+	}
+});
+
+router.put('/:id', async (req, res) => {
+	try {
+		const project = await Projects.update(req.params.id, req.body);
+		if (project) {
+			res.status(200).json(project);
+		} else {
+			res.status(404).json({ message: 'The project could not be found.' });
+		}
+	} catch (err) {
+		console.log(err);
+		res.status(500).json({ message: 'Error editing project.' });
+	}
+});
+
+router.delete('/:id', async (req, res) => {
+	try {
+		const { id } = req.params;
+		const count = await Projects.remove(id);
+		if (count > 0) {
+			res.status(200).json({ message: 'The project has been deleted' });
+		} else {
+			res.status(404).json({ message: 'The project could not be found.' });
+		}
+	} catch (err) {
+		res.status(500).json({ message: 'The project could not be deleted.' });
+	}
+});
+
+module.exports = router;
