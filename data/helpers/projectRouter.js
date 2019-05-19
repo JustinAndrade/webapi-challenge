@@ -25,6 +25,17 @@ router.get('/:id', async (req, res) => {
 	}
 });
 
+router.get('/:id/actions', async (req, res) => {
+	try {
+		const { id } = req.params;
+		const project = await Projects.getProjectActions(id);
+		res.status(200).json(project);
+	} catch (err) {
+		console.log(err);
+		res.status(500).json({ message: 'Error retrieving project.' });
+	}
+});
+
 router.post('/', async (req, res) => {
 	try {
 		const project = await Projects.insert(req.body);
